@@ -1,0 +1,5 @@
+# .gitignore for Java projects
+# Chris Vig (chris@invictus.so)
+
+build/
+doc/
