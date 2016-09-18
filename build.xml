@@ -1,9 +1,13 @@
-<project name="template" default="compile" basedir=".">
+<project name="template" default="all" basedir=".">
 
   <!-- Don't require includeantruntime for javac -->
   <presetdef name="javac">
     <javac includeantruntime="false"/>
   </presetdef>
+
+  <!-- Project configuration -->
+  <property name="project.packagename" value="so.invictus.${ant.project.name}"/>
+  <property name="project.mainclass" value="${project.packagename}.Program"/>
 
   <!-- Source directories -->
   <property name="dir.src" location="src"/>
@@ -12,9 +16,15 @@
 
   <!-- Output directories -->
   <property name="dir.build" location="build"/>
-  <property name="dir.build.main.class" location="${dir.build}/main/class"/>
-  <property name="dir.build.test.class" location="${dir.build}/test/class"/>
+  <property name="dir.build.main" location="${dir.build}/main"/>
+  <property name="dir.build.main.class" location="${dir.build.main}/class"/>
+  <property name="dir.build.main.jar" location="${dir.build.main}/jar"/>
+  <property name="dir.build.test" location="${dir.build}/test"/>
+  <property name="dir.build.test.class" location="${dir.build.test}/class"/>
   <property name="dir.doc" location="doc"/>
+
+  <!-- Output files -->
+  <property name="file.build.main.jar" location="${dir.build.main.jar}/${ant.project.name}.jar"/>
 
   <!-- Class paths -->
   <property name="dir.lib" location="/usr/share/java"/>
@@ -24,9 +34,17 @@
     <pathelement location="${dir.build.main.class}"/>
   </path>
 
-  <!-- Compile all binary targets -->
-  <target name="compile" depends="compile-main,compile-test">
+  <!-- Compile all targets -->
+  <target name="all" depends="compile,jar,doc"/>
+
+  <!-- Deletes all output targets -->
+  <target name="clean">
+    <delete dir="${dir.build}"/>
+    <delete dir="${dir.doc}"/>
   </target>
+
+  <!-- Compile all binary targets -->
+  <target name="compile" depends="compile-main,compile-test"/>
 
   <!-- Compile main application -->
   <target name="compile-main">
@@ -42,9 +60,31 @@
     </javac>
   </target>
 
+  <!-- Build JARs -->
+  <target name="jar" depends="jar-main"/>
+
+  <!-- Build main application JAR -->
+  <target name="jar-main" depends="compile-main">
+    <mkdir dir="${dir.build.main.jar}"/>
+    <jar destfile="${file.build.main.jar}"
+	 basedir="${dir.build.main.class}"
+	 includes="**/*.class">
+      <manifest>
+	<attribute name="Main-Class" value="${project.mainclass}"/>
+      </manifest>
+    </jar>
+    <chmod file="${file.build.main.jar}" perm="a+x"/>
+  </target>
+
+  <!-- Build javadocs -->
+  <target name="doc">
+    <mkdir dir="${dir.doc}"/>
+    <javadoc sourcepath="${dir.src.main.java}" destdir="${dir.doc}" packagenames="${project.packagename}.*"/>
+  </target>
+
   <!-- Run main application -->
   <target name="run" depends="compile-main">
-    <java classpath="${dir.build.main.class}" classname="so.invictus.template.Program"/>
+    <java classpath="${dir.build.main.class}" classname="${project.mainclass}"/>
   </target>
 
   <!-- Run tests -->
@@ -59,18 +99,6 @@
 	<fileset dir="${dir.build.test.class}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
-  </target>
-
-  <!-- Build javadocs -->
-  <target name="doc">
-    <mkdir dir="${dir.doc}"/>
-    <javadoc sourcepath="${dir.src.main.java}" destdir="${dir.doc}" packagenames="so.invictus.template.*"/>
-  </target>
-
-  <!-- Deletes all output files -->
-  <target name="clean">
-    <delete dir="${dir.build}"/>
-    <delete dir="${dir.doc}"/>
   </target>
 
 </project>
