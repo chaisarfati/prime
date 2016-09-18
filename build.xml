@@ -1,0 +1,76 @@
+<project name="template" default="compile" basedir=".">
+
+  <!-- Don't require includeantruntime for javac -->
+  <presetdef name="javac">
+    <javac includeantruntime="false"/>
+  </presetdef>
+
+  <!-- Source directories -->
+  <property name="dir.src" location="src"/>
+  <property name="dir.src.main.java" location="${dir.src}/main/java"/>
+  <property name="dir.src.test.java" location="${dir.src}/test/java"/>
+
+  <!-- Output directories -->
+  <property name="dir.build" location="build"/>
+  <property name="dir.build.main.class" location="${dir.build}/main/class"/>
+  <property name="dir.build.test.class" location="${dir.build}/test/class"/>
+  <property name="dir.doc" location="doc"/>
+
+  <!-- Class paths -->
+  <property name="dir.lib" location="/usr/share/java"/>
+  <path id="classpath.test">
+    <pathelement location="${dir.lib}/junit4.jar"/>
+    <pathelement location="${dir.lib}/hamcrest-all.jar"/>
+    <pathelement location="${dir.build.main.class}"/>
+  </path>
+
+  <!-- Compile all binary targets -->
+  <target name="compile" depends="compile-main,compile-test">
+  </target>
+
+  <!-- Compile main application -->
+  <target name="compile-main">
+    <mkdir dir="${dir.build.main.class}"/>
+    <javac srcdir="${dir.src.main.java}" destdir="${dir.build.main.class}"/>
+  </target>
+
+  <!-- Compile tests -->
+  <target name="compile-test" depends="compile-main">
+    <mkdir dir="${dir.build.test.class}"/>
+    <javac srcdir="${dir.src.test.java}" destdir="${dir.build.test.class}">
+      <classpath refid="classpath.test"/>
+    </javac>
+  </target>
+
+  <!-- Run main application -->
+  <target name="run" depends="compile-main">
+    <java classpath="${dir.build.main.class}" classname="so.invictus.template.Program"/>
+  </target>
+
+  <!-- Run tests -->
+  <target name="test" depends="compile-test">
+    <junit printsummary="yes" fork="yes" haltonfailure="no">
+      <classpath>
+	<path refid="classpath.test"/>
+	<pathelement location="${dir.build.test.class}"/>
+      </classpath>
+      <formatter type="brief" usefile="false"/>
+      <batchtest>
+	<fileset dir="${dir.build.test.class}" includes="**/*Test.class"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!-- Build javadocs -->
+  <target name="doc">
+    <mkdir dir="${dir.doc}"/>
+    <javadoc sourcepath="${dir.src.main.java}" destdir="${dir.doc}" packagenames="so.invictus.template.*"/>
+  </target>
+
+  <!-- Deletes all output files -->
+  <target name="clean">
+    <delete dir="${dir.build}"/>
+    <delete dir="${dir.doc}"/>
+  </target>
+
+</project>
