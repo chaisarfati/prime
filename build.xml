@@ -1,4 +1,4 @@
-<project name="${TEMPLATE}" default="all" basedir=".">
+<project name="prime" default="all" basedir=".">
 
   <!-- Don't require includeantruntime for javac -->
   <presetdef name="javac">

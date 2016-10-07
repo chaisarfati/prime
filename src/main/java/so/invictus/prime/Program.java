@@ -3,7 +3,7 @@
  * @author Chris Vig (chris@invictus.so)
  */
 
-package so.invictus.${TEMPLATE};
+package so.invictus.prime;
 
 /**
  * Main program class.
@@ -16,7 +16,7 @@ public class Program
    */
   public static void main(String[] args)
   {
-    System.out.println("Hello ${TEMPLATE}!");
+    System.out.println("Hello prime!");
   }
 
 }
