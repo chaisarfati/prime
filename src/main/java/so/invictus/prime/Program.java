@@ -11,12 +11,29 @@ package so.invictus.prime;
 public class Program
 {
 
+  /* ---- Constants ---- */
+
+  private static final int NORMAL_EXIT_CODE = 0;
+  private static final int FAILURE_EXIT_CODE = 1;
+
+  /* ---- Public Methods ---- */
+
   /**
    * Main program entry point.
    */
   public static void main(String[] args)
   {
-    System.out.println("Hello prime!");
+    try
+    {
+      CommandLineArguments parsedArgs = new CommandLineArguments(args);
+      System.out.printf("threadCount: %d\n", parsedArgs.getThreadCount());
+      System.out.printf("duration: %d\n", parsedArgs.getDuration());
+    }
+    catch (CommandLineArgumentsException ex)
+    {
+      System.out.println(ex.getMessage());
+      System.exit(1);
+    }
   }
 
 }
